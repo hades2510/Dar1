@@ -16,7 +16,7 @@ ENEMY_SPEED = 0.2
 ENEMY_SPAWN_RATE = 1.5
 ENEMY_SIZE = 2
 
-SHOW_DEBUG = True
+SHOW_DEBUG = False
 ENABLE_SOUNDS = False
 
 INTRO_TUNE = [
@@ -166,7 +166,46 @@ def render_thread(id):
     display.show()
     
     return
-    
+
+def show_game_over():
+    while True:
+        display.fill(0)
+        display.text('GAME OVER', HALF_WIDTH - 30, HALF_HEIGHT - 20)
+        display.text(f'SCORE:{score: >2}', HALF_WIDTH - 25, HALF_HEIGHT - 10)
+
+        display.text('Menu', 20, HALF_HEIGHT + 10)
+        display.text('Retry', HALF_WIDTH + 20, HALF_HEIGHT + 10)
+
+        rot, is_pressed = read_input()
+
+        option = int(rot / 20) % 2
+        
+        if option == 0:
+            display.line(18, HALF_HEIGHT + 10 + 9, 18 + 20, HALF_HEIGHT + 10 + 9, 1)
+            display.line(18, HALF_HEIGHT + 10 + 9, 18, HALF_HEIGHT + 10 + 2, 1)
+        else:
+            display.line(HALF_WIDTH + 18, HALF_HEIGHT + 10 + 9, HALF_WIDTH + 40, HALF_HEIGHT + 10 + 9, 1)
+            display.line(HALF_WIDTH + 18, HALF_HEIGHT + 10 + 9, HALF_WIDTH + 18, HALF_HEIGHT + 10 + 2, 1)
+
+        if is_pressed:
+            return option == 1
+
+        display.show()
+        time.sleep(0.2)
+
+def intro():
+    global was_button_pressed
+    global bullets
+    global objects
+    global barrel
+
+    render_thread(2)
+    play_tune_with_volume(INTRO_TUNE)
+    time.sleep(2)
+
+    was_button_pressed = False
+    bullets = []
+    objects = [{'x': HALF_WIDTH, 'y': HALF_HEIGHT, 'type': 'rect'}, barrel]
 
 barrel = {
     'type': 'line',
@@ -175,7 +214,7 @@ barrel = {
     'xe': HALF_WIDTH + BARREL_LENGTH,
     'ye': HALF_HEIGHT
 }
-objects = [{'x': HALF_WIDTH, 'y': HALF_HEIGHT, 'type': 'rect'}, barrel]
+objects = []
 bullets = []
 
 was_button_pressed = False
@@ -185,16 +224,14 @@ render_frame = False
 current_rot = 0
 
 score = 0
-is_game_over = False
+is_game_over = True
 
 debug = {
     'fps': 0,
     'rot': 0
 }
 
-render_thread(2)
-play_tune_with_volume(INTRO_TUNE)
-time.sleep(2)
+intro()
 
 while True:
     start_time = time.ticks_ms()
@@ -202,13 +239,15 @@ while True:
     rot, is_pressed = read_input()
 
     if is_game_over == True:
-        display.fill(0)
-        display.text('GAME OVER', HALF_WIDTH - 30, HALF_HEIGHT - 10)
-        display.text(f'SCORE:{score: >2}', HALF_WIDTH - 25, HALF_HEIGHT)
-        display.show()
-        
         mute_sound()
-        break
+        should_retry = show_game_over()
+
+        if should_retry == False:
+            break
+        else:
+            is_game_over = False
+            score = 0
+            intro()
 
     adjust_barrel(rot)
         
