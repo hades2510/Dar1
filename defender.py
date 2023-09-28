@@ -5,7 +5,7 @@ import vec
 
 from constants import *
 from init import display, read_input
-from audio import play_tune_with_volume, mute_sound
+from audio import play_tune_with_volume, mute_sound, GAME_OVER_TUNE
 
 BULLET_SPEED = 3
 
@@ -18,35 +18,6 @@ ENEMY_SIZE = 2
 
 SHOW_DEBUG = True
 ENABLE_SOUNDS = False
-
-GAME_OVER_TUNE=[
-    ["C5", 250, 100/127],
-    ["E5", 250, 100/127],
-    ["G5", 250, 100/127],
-    ["C6", 250, 100/127],
-    
-    ["B5", 250, 100/127],
-    ["A5", 250, 100/127],
-    ["F5", 250, 100/127],
-    ["C5", 250, 100/127],
-    
-    ["E5", 250, 100/127],
-    ["G5", 250, 100/127],
-    ["B5", 250, 100/127],
-    ["E6", 250, 100/127],
-    
-    ["C6", 250, 100/127],
-    ["D6", 250, 110/127],
-    ["C6", 500, 100/127],
-    
-    ["C3", 1000, 90/127],
-    
-    ["F3", 250, 90/127],
-    ["E3", 250, 90/127],
-    ["D3", 250, 90/127],
-    ["C3", 250, 90/127],
-    ["C3", 250, 80/127],
-]
 
 def draw():
     for obj in objects:
