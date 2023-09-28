@@ -1,28 +1,11 @@
-from machine import Pin, SPI
-from ssd1306 import SSD1306_SPI
-
 import time
 import random
 import math
 import vec
 
-from encoder import init as encoder_init, get_pos as encoder_pos
-from audio import init as audio_init, play_tune, play_tune_with_volume, mute_sound, volume
-
-WIDTH=128
-HEIGHT=64
-
-HALF_WIDTH=WIDTH//2
-HALF_HEIGHT=HEIGHT//2
-
-OUTLINE_COLOR=1
-
-spi = SPI(0, baudrate=80000000, polarity=0, phase=0, sck=Pin(6), mosi=Pin(7), miso=None)
-
-display=SSD1306_SPI(WIDTH, HEIGHT, spi, Pin(0), Pin(1), Pin(3))
-
-button = Pin(27, Pin.IN, Pin.PULL_DOWN)
-
+from constants import *
+from init import display, read_input
+from audio import play_tune_with_volume, mute_sound
 
 BULLET_SPEED = 3
 
@@ -35,13 +18,6 @@ ENEMY_SIZE = 2
 
 SHOW_DEBUG = True
 ENABLE_SOUNDS = False
-
-Pin(28, Pin.IN, Pin.PULL_UP)
-Pin(29, Pin.IN, Pin.PULL_UP)
-encoder_init(2, Pin(28))
-
-#audio init
-audio_init(26)
 
 GAME_OVER_TUNE=[
     ["C5", 250, 100/127],
@@ -72,13 +48,6 @@ GAME_OVER_TUNE=[
     ["C3", 250, 80/127],
 ]
 
-def read_input():            
-    is_pressed = button.value()
-    
-    rot = encoder_pos()
-    
-    return rot, is_pressed
-
 def draw():
     for obj in objects:
         if obj['type'] == 'rect':
@@ -90,13 +59,6 @@ def draw():
     for bullet in bullets:
         display.ellipse(round(bullet['x']), round(bullet['y']), 1, 1, OUTLINE_COLOR, True)
 
-def magnitude(p):
-    return math.sqrt(magnitude_squared(p))
-
-def magnitude_squared(p):
-    return p['x']**2 + p['y']**2
-
-# @micropython.native
 def physics():
     global bullets
     global is_game_over
@@ -129,7 +91,7 @@ def physics():
                 #	need to see if the proj is inside the line seg
                 distToPrev = vec.dist(proj, prevPos)
                 distToCurrent = vec.dist(proj, bullet)
-                if math.fabs( magnitude(travelVec) - distToPrev - distToCurrent ) < 0.1:
+                if math.fabs( vec.magnitude(travelVec) - distToPrev - distToCurrent ) < 0.1:
                     dist = vec.dist(proj, obj)
                     if dist <= obj['r']:
                         bullet['remove'] = True
