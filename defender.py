@@ -153,8 +153,6 @@ def show_debug():
     display.text(f'rot: {debug["rot"]}', 0, 10)
 
 def render_thread(id):
-    #display_lock.acquire()
-
     display.fill(0)
 
     draw()
@@ -164,8 +162,6 @@ def render_thread(id):
         show_debug()
 
     display.show()
-    
-    #display_lock.release()
     
     return
     
@@ -194,10 +190,7 @@ debug = {
     'rot': 0
 }
 
-#display_lock = _thread.allocate_lock()
-
 while True:
-    #display_lock.acquire()
     start_time = time.ticks_ms()
 
     rot, is_pressed = read_input()
@@ -240,7 +233,6 @@ while True:
         debug['fps'] = 1234
     debug['rot'] = rot
     
-    #display_lock.release()
     #_thread.start_new_thread(render_thread, (2,))
     render_thread(2)
     
