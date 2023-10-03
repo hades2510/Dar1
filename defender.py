@@ -224,7 +224,7 @@ render_frame = False
 current_rot = 0
 
 score = 0
-is_game_over = True
+is_game_over = False
 
 debug = {
     'fps': 0,
